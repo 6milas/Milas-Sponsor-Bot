@@ -20,6 +20,32 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
+import os
+import threading
+from flask import Flask
+# Импортируйте вашего бота (зависит от вашей библиотеки, например: from aiogram import Bot, Dispatcher...)
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    I am alive! 🤖"
+
+def run_flask():
+    # Render автоматически передает порт через переменную окружения PORT
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+if __name__ == "__main__":
+    # 1. Запускаем Flask-сервер в отдельном потоке, чтобы он не блокировал бота
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
+
+    # 2. Здесь запускайте вашего Telegram-бота (polling / infinity_polling)
+    print("Бот и Flask-сервер запущены!")
+    # Пример для aiogram/pyTelegramBotAPI:
+    # bot.infinity_polling()
 
 # Botuň sazlamalary
 BOT_TOKEN = '8582197285:AAHNQmynF2nrdP7ZZIEDmO2_HVwqA2hAzh0'
