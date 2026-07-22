@@ -48,13 +48,13 @@ class AdminStates(StatesGroup):
 
 # Premium Emojili Tekstler (Boşluklar goşuldy we HTML taglary dogry düzüldi)
 START_TEXT = (
-    'Salam, men @sevenvpns7 kanalynyñ body <tg-emoji id="5247133031235329609">👋</tg-emoji>\n\n'
-    'Men size 7/24 işleýan vpn kodlaryny berýan <tg-emoji id="5296369303661067030">🔒</tg-emoji>\n\n'
-    'Siziň etmeli işiňiz diňe sponsorlarymyza agza bolmak <tg-emoji id="4976940882071651344">🤝</tg-emoji>\n\n'
-    'Boda kanal goşdyrmak üçin:\n@milas_devx <tg-emoji id="5854834168764044261">👨‍💻</tg-emoji>'
+    'Salam, men @sevenvpns7 kanalynyñ body <tg-emoji emoji-id="5247133031235329609">👋</tg-emoji>\n\n'
+    'Men size 7/24 işleýan vpn kodlaryny berýan <tg-emoji emoji-id="5296369303661067030">🔒</tg-emoji>\n\n'
+    'Siziň etmeli işiňiz diňe sponsorlarymyza agza bolmak <tg-emoji emoji-id="4976940882071651344">🤝</tg-emoji>\n\n'
+    'Boda kanal goşdyrmak üçin:\n@milas_devx <tg-emoji emoji-id="5854834168764044261">👨‍💻</tg-emoji>'
 )
 
-NOT_SUB_TEXT = 'Siz şul kanallara agza bolmadyňyz: <tg-emoji id="5319034842514499001">⚠️</tg-emoji>'
+NOT_SUB_TEXT = 'Siz şul kanallara agza bolmadyňyz: <tg-emoji emoji-id="5319034842514499001">⚠️</tg-emoji>'
 
 EMOJI_IDS = {
     "success": "5206607081334906820",
@@ -454,7 +454,7 @@ async def check_sub_callback(call: CallbackQuery):
         if not vpn_code:
             vpn_code = "VPN kody entek girizilmändir."
 
-        vpn_message = f'<tg-emoji id="5886397939256925831">🔑</tg-emoji> <b>VPN:</b>\n\n<code>{vpn_code}</code>'
+        vpn_message = f'<tg-emoji emoji-id="5886397939256925831">🔑</tg-emoji> <b>VPN:</b>\n\n<code>{vpn_code}</code>'
 
         try:
             await call.message.delete()
@@ -469,7 +469,7 @@ async def check_sub_callback(call: CallbackQuery):
 async def admin_panel(message: Message):
     if not is_admin(message.from_user.id):
         await message.answer(
-            f'<tg-emoji id="{EMOJI_IDS["warning"]}">⚠️</tg-emoji> Siz admin dälsiňiz!',
+            f'<tg-emoji emoji-id="{EMOJI_IDS["warning"]}">⚠️</tg-emoji> Siz admin dälsiňiz!',
             parse_mode=ParseMode.HTML
         )
         return
@@ -491,7 +491,7 @@ async def admin_panel(message: Message):
     builder.adjust(2)
 
     await message.answer(
-        f'<tg-emoji id="{EMOJI_IDS["admin"]}">👑</tg-emoji> <b>Admin Panel</b>',
+        f'<tg-emoji emoji-id="{EMOJI_IDS["admin"]}">👑</tg-emoji> <b>Admin Panel</b>',
         reply_markup=builder.as_markup(),
         parse_mode=ParseMode.HTML
     )
@@ -503,7 +503,7 @@ async def add_admin_start(call: CallbackQuery, state: FSMContext):
         return
 
     await call.message.edit_text(
-        f'<tg-emoji id="{EMOJI_IDS["add"]}">➕</tg-emoji> <b>Täze Admin goşmak</b>\n\n'
+        f'<tg-emoji emoji-id="{EMOJI_IDS["add"]}">➕</tg-emoji> <b>Täze Admin goşmak</b>\n\n'
         f"Täze adminiň Telegram ID-syny iberiň (meselem: 123456789)\n"
         f"Ýatyrmak üçin /cancel iberiň.",
         parse_mode=ParseMode.HTML
@@ -522,7 +522,7 @@ async def process_add_admin_id(message: Message, state: FSMContext):
         new_admin_id = int(message.text.strip())
         add_admin_db(new_admin_id)
         await message.answer(
-            f'<tg-emoji id="{EMOJI_IDS["success"]}">✅</tg-emoji> <b>Admin üstünlikli goşuldy!</b>\n'
+            f'<tg-emoji emoji-id="{EMOJI_IDS["success"]}">✅</tg-emoji> <b>Admin üstünlikli goşuldy!</b>\n'
             f"ID: <code>{new_admin_id}</code>",
             parse_mode=ParseMode.HTML
         )
@@ -553,7 +553,7 @@ async def remove_admin_start(call: CallbackQuery):
     builder.adjust(1)
 
     await call.message.edit_text(
-        f'<tg-emoji id="{EMOJI_IDS["remove"]}">➖</tg-emoji> <b>Aýyrmak üçin admin saýlaň:</b>',
+        f'<tg-emoji emoji-id="{EMOJI_IDS["remove"]}">➖</tg-emoji> <b>Aýyrmak üçin admin saýlaň:</b>',
         reply_markup=builder.as_markup(),
         parse_mode=ParseMode.HTML
     )
@@ -569,7 +569,7 @@ async def delete_admin(call: CallbackQuery):
     remove_admin_db(admin_to_del)
 
     await call.message.edit_text(
-        f'<tg-emoji id="{EMOJI_IDS["success"]}">✅</tg-emoji> Admin aýryldy: <code>{admin_to_del}</code>',
+        f'<tg-emoji emoji-id="{EMOJI_IDS["success"]}">✅</tg-emoji> Admin aýryldy: <code>{admin_to_del}</code>',
         parse_mode=ParseMode.HTML
     )
     await call.answer()
@@ -581,7 +581,7 @@ async def list_admins(call: CallbackQuery):
         return
 
     admins = get_all_admins()
-    text = f'<tg-emoji id="{EMOJI_IDS["admin"]}">👑</tg-emoji> <b>Adminler sanawy:</b>\n\n'
+    text = f'<tg-emoji emoji-id="{EMOJI_IDS["admin"]}">👑</tg-emoji> <b>Adminler sanawy:</b>\n\n'
     for a_id in admins:
         role = " (Baş Admin)" if a_id in ADMIN_IDS else ""
         text += f"• <code>{a_id}</code>{role}\n"
@@ -599,7 +599,7 @@ async def add_sponsor_start(call: CallbackQuery, state: FSMContext):
         return
     
     await call.message.edit_text(
-        f'<tg-emoji id="{EMOJI_IDS["add"]}">➕</tg-emoji> <b>Sponsor goşmak</b>\n\n'
+        f'<tg-emoji emoji-id="{EMOJI_IDS["add"]}">➕</tg-emoji> <b>Sponsor goşmak</b>\n\n'
         f"Kanal ID-syny iberiň (meselem: -1001234567890)\n"
         f"Ýatyrmak üçin /cancel iberiň.",
         parse_mode=ParseMode.HTML
@@ -618,7 +618,7 @@ async def process_sponsor_channel_id(message: Message, state: FSMContext):
     await state.update_data(channel_id=channel_id)
     
     await message.answer(
-        f'<tg-emoji id="{EMOJI_IDS["link"]}">🔗</tg-emoji> Indi kanalyň çykgydyny (link) iberiň',
+        f'<tg-emoji emoji-id="{EMOJI_IDS["link"]}">🔗</tg-emoji> Indi kanalyň çykgydyny (link) iberiň',
         parse_mode=ParseMode.HTML
     )
     await state.set_state(AdminStates.waiting_for_sponsor_link)
@@ -647,7 +647,7 @@ async def process_sponsor_link(message: Message, state: FSMContext):
                 )
             
             await message.answer(
-                f'<tg-emoji id="{EMOJI_IDS["success"]}">✅</tg-emoji> Sponsor üstünlikli goşuldy!\n'
+                f'<tg-emoji emoji-id="{EMOJI_IDS["success"]}">✅</tg-emoji> Sponsor üstünlikli goşuldy!\n'
                 f"ID: <code>{channel_id}</code>\nLink: {link}",
                 parse_mode=ParseMode.HTML
             )
@@ -668,7 +668,7 @@ async def remove_sponsor_start(call: CallbackQuery):
         await call.answer()
         return
     
-    text = f'<tg-emoji id="{EMOJI_IDS["remove"]}">➖</tg-emoji> <b>Pozmak üçin sponsory saýlaň:</b>\n\n'
+    text = f'<tg-emoji emoji-id="{EMOJI_IDS["remove"]}">➖</tg-emoji> <b>Pozmak üçin sponsory saýlaň:</b>\n\n'
     builder = InlineKeyboardBuilder()
     
     for sponsor in sponsors:
@@ -697,7 +697,7 @@ async def delete_sponsor(call: CallbackQuery):
             with conn:
                 conn.execute("DELETE FROM sponsors WHERE id = ?", (sponsor_id,))
             await call.message.edit_text(
-                f'<tg-emoji id="{EMOJI_IDS["success"]}">✅</tg-emoji> Sponsor pozuldy!',
+                f'<tg-emoji emoji-id="{EMOJI_IDS["success"]}">✅</tg-emoji> Sponsor pozuldy!',
                 parse_mode=ParseMode.HTML
             )
         except Exception as e:
@@ -714,7 +714,7 @@ async def edit_vpn_code(call: CallbackQuery, state: FSMContext):
     current_code = get_setting('vpn_code')
     
     await call.message.edit_text(
-        f'<tg-emoji id="5886397939256925831">🔑</tg-emoji> <b>VPN koduny üýtgetmek</b>\n\n'
+        f'<tg-emoji emoji-id="5886397939256925831">🔑</tg-emoji> <b>VPN koduny üýtgetmek</b>\n\n'
         f"Häzirki kod: <code>{current_code if current_code else 'Bellenmedi'}</code>\n\n"
         f"Täze VPN koduny iberiň ýa-da ýatyrmak üçin /cancel iberiň.",
         parse_mode=ParseMode.HTML
@@ -733,7 +733,7 @@ async def process_vpn_code(message: Message, state: FSMContext):
     set_setting('vpn_code', new_code)
     
     await message.answer(
-        f'<tg-emoji id="{EMOJI_IDS["success"]}">✅</tg-emoji> VPN kody ýatda saklandy: <code>{new_code}</code>',
+        f'<tg-emoji emoji-id="{EMOJI_IDS["success"]}">✅</tg-emoji> VPN kody ýatda saklandy: <code>{new_code}</code>',
         parse_mode=ParseMode.HTML
     )
     await state.clear()
@@ -745,7 +745,7 @@ async def add_addlist_start(call: CallbackQuery, state: FSMContext):
         return
     
     await call.message.edit_text(
-        f'<tg-emoji id="{EMOJI_IDS["add"]}">➕</tg-emoji> <b>Addlist goşmak</b>\n\n'
+        f'<tg-emoji emoji-id="{EMOJI_IDS["add"]}">➕</tg-emoji> <b>Addlist goşmak</b>\n\n'
         f"Görkezilmeli adyny iberiň ýa-da ýatyrmak üçin /cancel iberiň.",
         parse_mode=ParseMode.HTML
     )
@@ -763,7 +763,7 @@ async def process_addlist_name(message: Message, state: FSMContext):
     await state.update_data(name=name)
     
     await message.answer(
-        f'<tg-emoji id="{EMOJI_IDS["link"]}">🔗</tg-emoji> Indi çykgydy (link) iberiň:',
+        f'<tg-emoji emoji-id="{EMOJI_IDS["link"]}">🔗</tg-emoji> Indi çykgydy (link) iberiň:',
         parse_mode=ParseMode.HTML
     )
     await state.set_state(AdminStates.waiting_for_addlist_link)
@@ -792,7 +792,7 @@ async def process_addlist_link(message: Message, state: FSMContext):
                 )
             
             await message.answer(
-                f'<tg-emoji id="{EMOJI_IDS["success"]}">✅</tg-emoji> Addlist üstünlikli goşuldy!\n'
+                f'<tg-emoji emoji-id="{EMOJI_IDS["success"]}">✅</tg-emoji> Addlist üstünlikli goşuldy!\n'
                 f"Ady: {name}\nLink: {link}",
                 parse_mode=ParseMode.HTML
             )
@@ -813,7 +813,7 @@ async def remove_addlist_start(call: CallbackQuery):
         await call.answer()
         return
     
-    text = f'<tg-emoji id="{EMOJI_IDS["remove"]}">➖</tg-emoji> <b>Pozmak üçin Addlist saýlaň:</b>\n\n'
+    text = f'<tg-emoji emoji-id="{EMOJI_IDS["remove"]}">➖</tg-emoji> <b>Pozmak üçin Addlist saýlaň:</b>\n\n'
     builder = InlineKeyboardBuilder()
     
     for addlist in addlists:
@@ -841,7 +841,7 @@ async def delete_addlist(call: CallbackQuery):
             with conn:
                 conn.execute("DELETE FROM addlists WHERE id = ?", (addlist_id,))
             await call.message.edit_text(
-                f'<tg-emoji id="{EMOJI_IDS["success"]}">✅</tg-emoji> Addlist pozuldy!',
+                f'<tg-emoji emoji-id="{EMOJI_IDS["success"]}">✅</tg-emoji> Addlist pozuldy!',
                 parse_mode=ParseMode.HTML
             )
         except Exception as e:
@@ -856,7 +856,7 @@ async def broadcast_start(call: CallbackQuery, state: FSMContext):
         return
     
     await call.message.edit_text(
-        f'<tg-emoji id="{EMOJI_IDS["broadcast"]}">📢</tg-emoji> <b>Bildiriş paýlaşmak</b>\n\n'
+        f'<tg-emoji emoji-id="{EMOJI_IDS["broadcast"]}">📢</tg-emoji> <b>Bildiriş paýlaşmak</b>\n\n'
         f"Hemme ulanyjylara paýlaşmak işleýän hatyňyzy iberiň.\n"
         f"Ýatyrmak üçin /cancel iberiň.",
         parse_mode=ParseMode.HTML
@@ -890,7 +890,7 @@ async def process_broadcast(message: Message, state: FSMContext):
             failed += 1
     
     await message.answer(
-        f'<tg-emoji id="{EMOJI_IDS["stats"]}">📊</tg-emoji> <b>Bildiriş tamamlandy!</b>\n\n'
+        f'<tg-emoji emoji-id="{EMOJI_IDS["stats"]}">📊</tg-emoji> <b>Bildiriş tamamlandy!</b>\n\n'
         f"✅ Üstünlikli: {success}\n"
         f"❌ Ýalňyşlyk: {failed}",
         parse_mode=ParseMode.HTML
@@ -910,7 +910,7 @@ async def show_stats(call: CallbackQuery):
     tgrass_enabled = get_tgrass_enabled()
     
     text = (
-        f'<tg-emoji id="{EMOJI_IDS["stats"]}">📊</tg-emoji> <b>Botyň statistikasy</b>\n\n'
+        f'<tg-emoji emoji-id="{EMOJI_IDS["stats"]}">📊</tg-emoji> <b>Botyň statistikasy</b>\n\n'
         f"👥 Ulanyjylar: {len(users)}\n"
         f"📢 Sponsorlar: {len(sponsors)}\n"
         f"📋 Addlistler: {len(addlists)}\n"
@@ -946,7 +946,7 @@ async def tgrass_settings(call: CallbackQuery):
     builder.adjust(1)
     
     await call.message.edit_text(
-        f'<tg-emoji id="{EMOJI_IDS["tgrass"]}">🌟</tg-emoji> <b>TGrass Sazlamalary</b>\n\n'
+        f'<tg-emoji emoji-id="{EMOJI_IDS["tgrass"]}">🌟</tg-emoji> <b>TGrass Sazlamalary</b>\n\n'
         f"Status: {status_text}\n\n"
         f"API: {TGRASS_API_URL}",
         reply_markup=builder.as_markup(),
@@ -980,7 +980,7 @@ async def refresh_tgrass(call: CallbackQuery):
     
     if msg == "ok":
         await call.message.edit_text(
-            f'<tg-emoji id="{EMOJI_IDS["success"]}">✅</tg-emoji> <b>TGrass kanallary täzelendi!</b>\n\n'
+            f'<tg-emoji emoji-id="{EMOJI_IDS["success"]}">✅</tg-emoji> <b>TGrass kanallary täzelendi!</b>\n\n'
             f"📡 Alnan kanal sany: {count}\n\n"
             f"🌟 {count} kanal RAM-e ýatda saklandy.",
             reply_markup=InlineKeyboardBuilder().button(text="◀️ Yza", callback_data="tgrass_settings").as_markup(),
@@ -988,7 +988,7 @@ async def refresh_tgrass(call: CallbackQuery):
         )
     else:
         await call.message.edit_text(
-            f'<tg-emoji id="{EMOJI_IDS["warning"]}">❌</tg-emoji> <b>TGrass baglanyşyk hatasy!</b>\n\n'
+            f'<tg-emoji emoji-id="{EMOJI_IDS["warning"]}">❌</tg-emoji> <b>TGrass baglanyşyk hatasy!</b>\n\n'
             f"Hata: <code>{msg}</code>",
             reply_markup=InlineKeyboardBuilder().button(text="◀️ Yza", callback_data="tgrass_settings").as_markup(),
             parse_mode=ParseMode.HTML
@@ -1019,7 +1019,7 @@ async def back_to_admin(call: CallbackQuery):
     builder.adjust(2)
     
     await call.message.edit_text(
-        f'<tg-emoji id="{EMOJI_IDS["admin"]}">👑</tg-emoji> <b>Admin Panel</b>',
+        f'<tg-emoji emoji-id="{EMOJI_IDS["admin"]}">👑</tg-emoji> <b>Admin Panel</b>',
         reply_markup=builder.as_markup(),
         parse_mode=ParseMode.HTML
     )
