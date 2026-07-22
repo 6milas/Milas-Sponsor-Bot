@@ -15,7 +15,8 @@ from aiogram.types import (
     InlineKeyboardButton, 
     InlineKeyboardMarkup,
     CallbackQuery,
-    Message
+    Message,
+    FSInputFile
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.enums import ParseMode
@@ -70,6 +71,7 @@ class AdminStates(StatesGroup):
     waiting_for_sponsor_position = State()
     waiting_for_addlist_position = State()
     waiting_for_add_admin_id = State()
+    waiting_for_db_upload = State()
 
 # i'm yourdad'
 EMOJI_IDS = {
@@ -670,7 +672,7 @@ async def check_sub_callback(call: CallbackQuery):
     is_subscribed, not_subscribed = await check_all_subscriptions(user_id, username, is_premium)
 
     if not is_subscribed:
-        text = f"<tg-emoji emoji-id=\"{EMOJI_IDS['warning']}\">🔐</tg-emoji> <b>Вы не подписались на следующие каналы:</b>\n\n"
+        text = f"<b>Вы не подписались на следующие каналы:</b>\n\n"
         for channel in not_subscribed:
             text += f"• {channel['name']}\n"
         text += "\nПодпишитесь и нажмите кнопку снова."
@@ -757,6 +759,16 @@ async def admin_panel(message: Message):
         text="Список админов",
         callback_data="list_admins",
         icon_custom_emoji_id=EMOJI_IDS["admin"]
+    )
+    builder.button(
+        text="Скачать БД",
+        callback_data="download_db",
+        icon_custom_emoji_id=EMOJI_IDS["stats"]
+    )
+    builder.button(
+        text="Поставить БД",
+        callback_data="upload_db",
+        icon_custom_emoji_id=EMOJI_IDS["edit"]
     )
     
     builder.adjust(2)
@@ -1291,22 +1303,22 @@ async def refresh_tgrass(call: CallbackQuery):
         await call.answer("❌ Доступ запрещен!", show_alert=True)
         return
     
-    await call.answer("🔄 Kanallar tazelenýär...", show_alert=False)
+    await call.answer("🔄 Каналы обновляются...", show_alert=False)
     
     count, msg = tgrass_fetch_channels()
     
     if msg == "ok":
         await call.message.edit_text(
-            f"<tg-emoji emoji-id=\"{EMOJI_IDS['success']}\">✅</tg-emoji> <b>TGrass kanalları täzelendi!</b>\n\n"
-            f"📡 Alnan kanal sany: {count}\n\n"
-            f"🌟 {count} kanal RAM-e ýatda saklandy.",
+            f"<tg-emoji emoji-id=\"{EMOJI_IDS['success']}\">✅</tg-emoji> <b>TGrass каналы обновлены!</b>\n\n"
+            f"📡 Каналов: {count}\n\n"
+            f"🌟 {count} каналов были сохранены.",
             reply_markup=InlineKeyboardBuilder().button(text="◀️ Yza", callback_data="tgrass_settings").as_markup()
         )
     else:
         await call.message.edit_text(
-            f"<tg-emoji emoji-id=\"{EMOJI_IDS['warning']}\">❌</tg-emoji> <b>TGrass baglanyşyk hatasy!</b>\n\n"
-            f"Hata: <code>{msg}</code>\n\n"
-            f"API-niň işleýändigini barlaň.",
+            f"<tg-emoji emoji-id=\"{EMOJI_IDS['warning']}\">❌</tg-emoji> <b>TGrass ошибка соединения!</b>\n\n"
+            f"Ошибка: <code>{msg}</code>\n\n"
+            f"Проверьте API",
             reply_markup=InlineKeyboardBuilder().button(text="◀️ Yza", callback_data="tgrass_settings").as_markup()
         )
     
@@ -1380,6 +1392,16 @@ async def back_to_admin(call: CallbackQuery):
         callback_data="list_admins",
         icon_custom_emoji_id=EMOJI_IDS["admin"]
     )
+    builder.button(
+        text="Скачать БД",
+        callback_data="download_db",
+        icon_custom_emoji_id=EMOJI_IDS["stats"]
+    )
+    builder.button(
+        text="Поставить БД",
+        callback_data="upload_db",
+        icon_custom_emoji_id=EMOJI_IDS["edit"]
+    )
     
     builder.adjust(2)
     
@@ -1389,11 +1411,61 @@ async def back_to_admin(call: CallbackQuery):
     )
     await call.answer()
 
+@dp.callback_query(F.data == "download_db")
+async def download_db(call: CallbackQuery):
+    if not is_admin(call.from_user.id):
+        await call.answer("❌ Доступ запрещен!", show_alert=True)
+        return
+
+    db_file = FSInputFile('wwwnahnah.db')
+    await call.message.answer_document(document=db_file, caption="📦 Резервная копия базы данных")
+    await call.answer()
+
+@dp.callback_query(F.data == "upload_db")
+async def upload_db_start(call: CallbackQuery, state: FSMContext):
+    if not is_admin(call.from_user.id):
+        await call.answer("❌ Доступ запрещен!", show_alert=True)
+        return
+
+    await call.message.edit_text(
+        "📂 <b>Отправьте файл базы данных (.db)</b>\n\n"
+        "⚠️ <i>Внимание: Текущая база данных будет полностью перезаписана!</i>\n"
+        "Или отправьте /cancel для отмены."
+    )
+    await state.set_state(AdminStates.waiting_for_db_upload)
+    await call.answer()
+
+@dp.message(AdminStates.waiting_for_db_upload)
+async def process_db_upload(message: Message, state: FSMContext):
+    if message.text == "/cancel":
+        await state.clear()
+        await message.answer("❌ Операция отменена.")
+        return
+
+    if not message.document:
+        await message.answer("❌ Пожалуйста, отправьте файл как документ (файл .db).")
+        return
+
+    if not message.document.file_name.endswith('.db'):
+        await message.answer("❌ Неверный формат файла. Ожидается файл .db")
+        return
+
+    # Загружаем файл
+    file_id = message.document.file_id
+    file = await bot.get_file(file_id)
+    file_path = file.file_path
+
+    # Скачиваем и перезаписываем
+    await bot.download_file(file_path, destination='wwwnahnah.db')
+
+    await message.answer("✅ База данных успешно обновлена!")
+    await state.clear()
+
 async def main():
     logging.info("Bot started")
     print("🤖 Бот работает...")
     print(f"👑 Admin ID: {ADMIN_IDS[0]}")
-    print("🌟 TGrass integration active (DÜZELDILDI)")
+    print("🌟 TGrass integration active")
     print("✨ Custom emoji icons on buttons enabled")
     
     # Запуск Flask сервера для Render
@@ -1402,7 +1474,7 @@ async def main():
     try:
         count, msg = tgrass_fetch_channels()
         if msg == "ok":
-            print(f"📡 TGrass: {count} kanal RAM-e ýüklendi")
+            print(f"📡 TGrass: {count} каналов были сохранены.")
         else:
             print(f"⚠️ TGrass: {msg}")
     except Exception as e:
