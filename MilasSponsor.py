@@ -51,7 +51,7 @@ BOT_TOKEN = '8582197285:AAHNQmynF2nrdP7ZZIEDmO2_HVwqA2hAzh0'
 ADMIN_IDS = [7569831989]
 
 # TGRASS
-TGRASS_API_KEY = "ddbfd1183e5c4a769ebfd7ae47187d0d"
+TGRASS_API_KEY = "5daa17ad97944e95aa242eebc2e2ba0f"
 TGRASS_API_URL = "https://tgrass.space/offers"
 
 # bot
