@@ -26,10 +26,9 @@ from flask import Flask
 # Импортируйте вашего бота (зависит от вашей библиотеки, например: from aiogram import Bot, Dispatcher...)
 
 app = Flask(__name__)
-
 @app.route('/')
 def home():
-    I am alive! 🤖"
+    return "I am alive! 🤖"
 
 def run_flask():
     # Render автоматически передает порт через переменную окружения PORT
