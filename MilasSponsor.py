@@ -3,11 +3,7 @@ import sqlite3
 import logging
 import requests
 import time
-import os
-import threading
 from contextlib import closing
-from flask import Flask
-
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 from aiogram.types import (
@@ -23,33 +19,24 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 
-# ================= FLASK WEB SERVER =================
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "I am alive! 🤖"
-
-def run_flask():
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
-
-# ================= SAZLAMALAR ВЕ КОНСТАНТАЛАР =================
-
+# Botuň sazlamalary
 BOT_TOKEN = '8126416818:AAHQHwo7N9FQbOwZcVDmi_R7EfAvyuKP9EE'
 ADMIN_IDS = [7569831989]
 
+# TGRASS
 TGRASS_API_KEY = "5daa17ad97944e95aa242eebc2e2ba0f"
 TGRASS_API_URL = "https://tgrass.space/offers"
 
+# Bot initialize (DefaultBotProperties hem goşuldy, we her hatda parse_mode HTML görkezildi)
 bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
+# RAM önbelleği
 tgrass_channels_cache = []
 tgrass_cache_time = 0
 
+# FSM States
 class AdminStates(StatesGroup):
     waiting_for_sponsor_channel_id = State()
     waiting_for_sponsor_link = State()
@@ -59,6 +46,7 @@ class AdminStates(StatesGroup):
     waiting_for_broadcast = State()
     waiting_for_add_admin_id = State()
 
+# Premium Emojili Tekstler (Boşluklar goşuldy we HTML taglary dogry düzüldi)
 START_TEXT = (
     'Salam, men @sevenvpns7 kanalynyñ body <tg-emoji id="5247133031235329609">👋</tg-emoji>\n\n'
     'Men size 7/24 işleýan vpn kodlaryny berýan <tg-emoji id="5296369303661067030">🔒</tg-emoji>\n\n'
@@ -405,12 +393,14 @@ async def cmd_start(message: Message):
 
     builder = InlineKeyboardBuilder()
     for channel in all_channels:
+        # СИНИЙ цвет каналов (primary style)
         builder.button(
             text=channel['name'],
             url=channel['link'],
             style="primary"
         )
 
+    # ЗЕЛЁНЫЙ цвет кнопки (success style) и иконка
     builder.button(
         text="Agza boldum",
         callback_data="check_sub",
@@ -419,6 +409,7 @@ async def cmd_start(message: Message):
     )
     builder.adjust(1)
 
+    # Строго указываем parse_mode="HTML"
     await message.answer(START_TEXT, reply_markup=builder.as_markup(), parse_mode=ParseMode.HTML)
 
 @dp.callback_query(F.data == "check_sub")
@@ -432,12 +423,14 @@ async def check_sub_callback(call: CallbackQuery):
     if not is_subscribed:
         builder = InlineKeyboardBuilder()
         for channel in not_subscribed:
+            # СИНИЙ цвет непрочитанных каналов
             builder.button(
                 text=channel['name'],
                 url=channel['link'],
                 style="primary"
             )
 
+        # ЗЕЛЁНЫЙ цвет кнопки проверки
         builder.button(
             text="Agza boldum",
             callback_data="check_sub",
@@ -1032,8 +1025,7 @@ async def back_to_admin(call: CallbackQuery):
     )
     await call.answer()
 
-# ================= ENTRYPOINT =================
-
+# Main runner
 async def main():
     logging.info("Bot started")
     print("🤖 Bot işleýär...")
@@ -1051,13 +1043,6 @@ async def main():
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    # 1. Запуск Flask в отдельном потоке (фоновый сервис для Render Health Checks)
-    flask_thread = threading.Thread(target=run_flask)
-    flask_thread.daemon = True
-    flask_thread.start()
-    print("Бот и Flask-сервер запущены!")
-
-    # 2. Запуск основного цикла бота
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
