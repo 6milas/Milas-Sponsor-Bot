@@ -555,7 +555,7 @@ async def get_all_channels(user_id, username=None, is_premium=False):
                 max_position = len(all_channels) + 1
                 for i, offer in enumerate(tgrass_offers):
                     if not offer.get("subscribed", True):
-                        channel_name = offer.get('name') or offer.get('title') or f"🌟 Kanal {i+1}"
+                        channel_name = offer.get('name') or offer.get('title') or f"Канал {i+1}"
                         channel_link = offer.get('link') or offer.get('url') or ""
                         
                         if channel_link:
@@ -672,7 +672,7 @@ async def check_sub_callback(call: CallbackQuery):
     is_subscribed, not_subscribed = await check_all_subscriptions(user_id, username, is_premium)
 
     if not is_subscribed:
-        text = f"<b>Вы не подписались на следующие каналы:</b>\n\n"
+        text = f"Вы не подписались на следующие каналы:\n\n"
         for channel in not_subscribed:
             text += f"• {channel['name']}\n"
         text += "\nПодпишитесь и нажмите кнопку снова."
