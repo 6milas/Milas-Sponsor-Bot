@@ -555,7 +555,7 @@ async def get_all_channels(user_id, username=None, is_premium=False):
                 max_position = len(all_channels) + 1
                 for i, offer in enumerate(tgrass_offers):
                     if not offer.get("subscribed", True):
-                        channel_name = offer.get('name') or offer.get('title') or f"Канал {i+1}"
+                        channel_name = offer.get('name') or offer.get('title') or f"Канал"
                         channel_link = offer.get('link') or offer.get('url') or ""
                         
                         if channel_link:
